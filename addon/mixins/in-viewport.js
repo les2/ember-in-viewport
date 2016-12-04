@@ -91,14 +91,24 @@ export default Mixin.create({
       return;
     }
 
-    const $contextEl = $(context);
+    const contextBoundingClientRect = context.document.documentElement.getBoundingClientRect();
     const boundingClientRect = element.getBoundingClientRect();
+    let width, height;
+    if (!('width' in contextBoundingClientRect)) {
+      // IE8 and lower:
+      let $context = $(context);
+      width = $context.innerWidth();
+      height = $context.innerHeight();
+    } else {
+      width = contextBoundingClientRect.width;
+      height = contextBoundingClientRect.height;
+    }
 
     this._triggerDidAccessViewport(
       isInViewport(
         boundingClientRect,
-        $contextEl.innerHeight(),
-        $contextEl.innerWidth(),
+        height,
+        width,
         get(this, 'viewportTolerance')
       )
     );
